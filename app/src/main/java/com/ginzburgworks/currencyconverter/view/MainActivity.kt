@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.viewModel = viewModel
         initRecycler()
         subscribeToDataUpdates()
     }
@@ -33,7 +34,13 @@ class MainActivity : AppCompatActivity() {
     private fun initRecycler() {
         binding.mainRecycler.apply {
             adapter = viewModel.coinsAdapter
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(MainActivity())
+        }.also {
+            viewModel.coinsAdapter.onItemClick = {
+                viewModel.coinsAdapter.updateCalculationFlag(it)
+            }
         }
     }
 }
+
+

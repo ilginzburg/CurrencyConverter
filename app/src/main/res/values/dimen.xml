@@ -7,8 +7,8 @@
     <dimen name="item_width">150dp</dimen>
     <dimen name="item_title_padding">8dp</dimen>
     <dimen name="item_name_text_size">20sp</dimen>
-    <dimen name="item_value_padding">16dp</dimen>
-    <dimen name="item_value_text_size">20sp</dimen>
+    <dimen name="item_value_padding">22dp</dimen>
+    <dimen name="item_value_text_size">23sp</dimen>
     <dimen name="item_char_code_text_size">30sp</dimen>
     <dimen name="item_desc_padding">8dp</dimen>
     <dimen name="app_bar_height">500dp</dimen>

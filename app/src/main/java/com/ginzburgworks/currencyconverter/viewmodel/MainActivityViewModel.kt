@@ -1,5 +1,6 @@
 package com.ginzburgworks.currencyconverter.viewmodel
 
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +22,6 @@ class MainActivityViewModel(
     val coinsAdapter: CoinListRecyclerAdapter
 ) : ViewModel() {
 
-
     private val errorEvent = SingleLiveEvent<String>()
     private val exceptionHandler = CoroutineExceptionHandler { _, e ->
         errorEvent.postValue(
@@ -34,15 +34,15 @@ class MainActivityViewModel(
 
     val coinsListLiveData: LiveData<List<Coin>> = interactor.getDataFromLocal()
 
+    val isLoading = ObservableBoolean()
+
     init {
         isLocalDataSourceNeedToUpdate()
     }
 
     private fun isLocalDataSourceNeedToUpdate() {
-        if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLocalDataSourceUpdateTime())) {
-            clearLocalDataSource()
-            requestFreshDataFromRemote()
-        }
+        if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLocalDataSourceUpdateTime()))
+            refreshLocalDataSource()
     }
 
     private fun clearLocalDataSource() {
@@ -56,9 +56,20 @@ class MainActivityViewModel(
         return (currentTimeInMs - updateTimeInMs) > MAX_TIME_AFTER_BD_UPDATE
     }
 
-    private fun requestFreshDataFromRemote() {
+    private fun refreshLocalDataSource() {
+        clearLocalDataSource()
+        requestNewDataFromRemote()
+    }
+
+    private fun requestNewDataFromRemote() {
         scope.launch {
             interactor.requestDataFromRemote()
         }
+    }
+
+    fun refreshData() {
+        isLoading.set(true)
+        refreshLocalDataSource()
+        isLoading.set(false)
     }
 }

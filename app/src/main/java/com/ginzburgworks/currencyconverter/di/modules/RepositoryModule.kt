@@ -25,5 +25,5 @@ object RepositoryModule {
         ).build().coinDao()
 
     @Provides
-    fun provideRepository(filmDao: CoinDao) = CoinsRepository(filmDao)
+    fun provideRepository(coinDao: CoinDao) = CoinsRepository(coinDao)
 }
