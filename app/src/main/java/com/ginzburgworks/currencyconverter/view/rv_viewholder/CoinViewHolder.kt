@@ -1,16 +1,25 @@
 package com.ginzburgworks.currencyconverter.view.rv_viewholder
 
+import android.view.LayoutInflater
 import android.view.View
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.currencyconverter.data.local.Coin
 import com.ginzburgworks.currencyconverter.databinding.CoinItemBinding
 
 class CoinViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private lateinit var binding: CoinItemBinding
+    private val binding: CoinItemBinding by lazy { getThisFilmItemBinding() }
 
-    fun bind(coin: Coin, coinItemBinding: CoinItemBinding) {
-        binding = coinItemBinding
+    private fun getThisFilmItemBinding(): CoinItemBinding {
+        return DataBindingUtil.bind(itemView) ?: CoinItemBinding.inflate(
+            LayoutInflater.from(
+                itemView.context
+            )
+        )
+    }
+
+    fun bind(coin: Coin) {
         binding.coin = coin
         binding.item = this
     }

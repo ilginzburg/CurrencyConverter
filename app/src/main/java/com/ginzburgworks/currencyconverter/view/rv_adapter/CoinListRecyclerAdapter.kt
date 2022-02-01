@@ -22,7 +22,7 @@ class CoinListRecyclerAdapter : RecyclerView.Adapter<CoinViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CoinViewHolder, position: Int) {
-        holder.bind(items[holder.adapterPosition],binding)
+        holder.bind(items[holder.adapterPosition])
     }
 
     fun refreshAdapterData(list: List<Coin>){
@@ -41,7 +41,6 @@ class CoinListRecyclerAdapter : RecyclerView.Adapter<CoinViewHolder>() {
     }
 
     private fun clearItems() {
-        println("--------> CLEAR_ITEMS_CALL")
         val itemCountBeforeClear = itemCount
         items.clear()
         notifyItemRangeRemoved(0, itemCountBeforeClear)
