@@ -8,5 +8,5 @@ import retrofit2.http.GET
 
 interface CbrApi {
     @GET(JSON_NAME)
-    fun getCoins(): Call<CbrResultsDto>
+    suspend  fun getCoins(): CbrResultsDto?
 }

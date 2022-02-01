@@ -25,7 +25,14 @@ class CoinListRecyclerAdapter : RecyclerView.Adapter<CoinViewHolder>() {
         holder.bind(items[holder.adapterPosition],binding)
     }
 
-    fun addItems(list: List<Coin>) {
+    fun refreshAdapterData(list: List<Coin>){
+        if (list.isEmpty())
+            return
+        clearItems()
+        addItems(list)
+    }
+
+    private fun addItems(list: List<Coin>) {
         val itemCountBeforeAdding = itemCount
         val itemsAdded = list.size
         items.addAll(list)
@@ -33,10 +40,10 @@ class CoinListRecyclerAdapter : RecyclerView.Adapter<CoinViewHolder>() {
         notifyItemRangeChanged(0, itemsAdded)
     }
 
-    fun clearItems() {
+    private fun clearItems() {
+        println("--------> CLEAR_ITEMS_CALL")
         val itemCountBeforeClear = itemCount
         items.clear()
         notifyItemRangeRemoved(0, itemCountBeforeClear)
     }
-
 }

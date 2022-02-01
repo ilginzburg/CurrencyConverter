@@ -3,23 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <import type="android.view.View" />
-
         <variable
             name="coin"
             type="com.ginzburgworks.currencyconverter.data.local.Coin" />
-
         <variable
             name="item"
             type="com.ginzburgworks.currencyconverter.view.rv_viewholder.CoinViewHolder" />
-
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/coin_item_height"
-        android:onClick="@{() -> item.toggleUserInputVisibility()}">
+        android:layout_height="@dimen/coin_item_height">
 
 
         <androidx.cardview.widget.CardView
@@ -28,7 +23,8 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/coin_card_margin"
             android:elevation="@dimen/coin_card_elevation"
-            app:cardCornerRadius="@dimen/coin_card_corner_radius">
+            app:cardCornerRadius="@dimen/coin_card_corner_radius"
+            android:onClick="@{() -> item.toggleUserInputVisibility()}">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/item_container"

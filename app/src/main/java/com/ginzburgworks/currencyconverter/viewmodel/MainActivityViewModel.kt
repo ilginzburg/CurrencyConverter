@@ -1,7 +1,6 @@
 package com.ginzburgworks.currencyconverter.viewmodel
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ginzburgworks.currencyconverter.R
@@ -13,6 +12,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
+
+private const val MAX_TIME_AFTER_BD_UPDATE = 600000
 
 class MainActivityViewModel(
     private val interactor: Interactor,
@@ -26,31 +28,37 @@ class MainActivityViewModel(
             (R.string.exc_handler_msg).toString() + e
         )
     }
-    private val mainActivityViewModelContext =
+    private val context =
         viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
-    private val mainActivityViewModelScope = CoroutineScope(mainActivityViewModelContext)
+    private val scope = CoroutineScope(context)
 
-    val coinsListLiveData = MutableLiveData<List<Coin>>()
+    val coinsListLiveData: LiveData<List<Coin>> = interactor.getDataFromLocal()
 
     init {
-      //  coinsListLiveData = interactor.getCoinsFromDB()
-        requestCoinsFromApi()
+        isLocalDataSourceNeedToUpdate()
     }
 
-    fun requestCoinsFromApi() {
-        interactor.requestCoinsFromApi( object : ApiCallback {
-            override fun onSuccess(list:List<Coin>) {
-               coinsListLiveData.postValue(list)
-            }
-
-            override fun onFailure() {
-            }
-        })
+    private fun isLocalDataSourceNeedToUpdate() {
+        if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLocalDataSourceUpdateTime())) {
+            clearLocalDataSource()
+            requestFreshDataFromRemote()
+        }
     }
 
-    interface ApiCallback {
-        fun onSuccess(list:List<Coin>)
-        fun onFailure()
+    private fun clearLocalDataSource() {
+        scope.launch {
+            interactor.clearLocalDataSource()
+        }
     }
 
+    private fun isLastUpdateEarlierThanPredefinedMaxTime(updateTimeInMs: Long): Boolean {
+        val currentTimeInMs = Calendar.getInstance().timeInMillis
+        return (currentTimeInMs - updateTimeInMs) > MAX_TIME_AFTER_BD_UPDATE
+    }
+
+    private fun requestFreshDataFromRemote() {
+        scope.launch {
+            interactor.requestDataFromRemote()
+        }
+    }
 }

@@ -3,40 +3,47 @@ package com.ginzburgworks.currencyconverter.domain
 import androidx.lifecycle.LiveData
 import com.ginzburgworks.currencyconverter.data.local.Coin
 import com.ginzburgworks.currencyconverter.data.local.db.CoinsRepository
+import com.ginzburgworks.currencyconverter.data.local.shared.PreferenceProvider
 import com.ginzburgworks.currencyconverter.data.remote.CbrApi
-import com.ginzburgworks.currencyconverter.data.remote.entity.CbrResultsDto
 import com.ginzburgworks.currencyconverter.domain.Converter.convertApiResponseToDtoList
-import com.ginzburgworks.currencyconverter.viewmodel.MainActivityViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import java.util.*
 
-class Interactor(private val retrofitService: CbrApi, private val repo: CoinsRepository) {
+class Interactor(
+    private val retrofitService: CbrApi,
+    private val repo: CoinsRepository,
+    private val preferenceProvider: PreferenceProvider
+) {
 
     val listFromDataSourceToUI = Channel<List<Coin>>(Channel.CONFLATED)
 
-    fun requestCoinsFromApi(callback: MainActivityViewModel.ApiCallback) {
-        retrofitService.getCoins().enqueue(object : Callback<CbrResultsDto> {
-            override fun onResponse(
-                call: Call<CbrResultsDto>,
-                response: Response<CbrResultsDto>
-            ) {
-                response.body()?.let {
-                    callback.onSuccess(
-                        convertApiResponseToDtoList(
-                            response.body()
-                        )
-                    )
-                }
+    suspend fun requestDataFromRemote() = coroutineScope {
+        val result = async {
+            retrofitService.getCoins()
+        }
+        result.await()?.let { dto ->
+            launch {
+                val list = convertApiResponseToDtoList(dto)
+                putDataToLocal(list)
+                saveLocalDataSourceUpdateTime()
             }
-
-            override fun onFailure(call: Call<CbrResultsDto>, t: Throwable) {
-                callback.onFailure()
-            }
-        })
+        }
     }
 
-    fun getCoinsFromDB(): LiveData<List<Coin>> = repo.getAllFromDB()
+    fun getDataFromLocal(): LiveData<List<Coin>> = repo.getAll()
+
+    suspend fun clearLocalDataSource() = repo.deleteAll()
+
+    private suspend fun putDataToLocal(list: List<Coin>) = repo.putData(list)
+
+    fun getLocalDataSourceUpdateTime() = preferenceProvider.getLocalDataSourceUpdateTime()
+
+    private fun saveLocalDataSourceUpdateTime() {
+        val dbUpdateTime = Calendar.getInstance().timeInMillis
+        preferenceProvider.saveLocalDataSourceUpdateTime(dbUpdateTime)
+    }
 }
 

@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun subscribeToDataUpdates() {
         viewModel.coinsListLiveData.observe(this) {
-            viewModel.coinsAdapter.addItems(it)
+            viewModel.coinsAdapter.refreshAdapterData(it)
         }
     }
 

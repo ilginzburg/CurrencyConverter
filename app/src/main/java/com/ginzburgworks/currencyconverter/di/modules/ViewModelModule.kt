@@ -1,6 +1,7 @@
 package com.ginzburgworks.currencyconverter.di.modules
 
 import com.ginzburgworks.currencyconverter.data.local.db.CoinsRepository
+import com.ginzburgworks.currencyconverter.data.local.shared.PreferenceProvider
 import com.ginzburgworks.currencyconverter.data.remote.CbrApi
 import com.ginzburgworks.currencyconverter.domain.Interactor
 import com.ginzburgworks.currencyconverter.view.rv_adapter.CoinListRecyclerAdapter
@@ -15,11 +16,20 @@ import dagger.hilt.android.components.ActivityComponent
 object ViewModelModule {
 
     @Provides
-    fun provideInteractor(repository: CoinsRepository, cbrApi: CbrApi) = Interactor(repo = repository, retrofitService = cbrApi)
+    fun providePreferences() = PreferenceProvider()
+
+    @Provides
+    fun provideInteractor(
+        repository: CoinsRepository,
+        cbrApi: CbrApi,
+        provider: PreferenceProvider
+    ) = Interactor(repo = repository, retrofitService = cbrApi, preferenceProvider = provider)
 
     @Provides
     fun provideRecycler() = CoinListRecyclerAdapter()
 
     @Provides
-    fun provideViewModel(interactor: Interactor,coinsAdapter: CoinListRecyclerAdapter): MainActivityViewModel = MainActivityViewModel(interactor = interactor, coinsAdapter = coinsAdapter)
+    fun provideViewModel(interactor: Interactor, adapter: CoinListRecyclerAdapter):
+            MainActivityViewModel =
+        MainActivityViewModel(interactor = interactor, coinsAdapter = adapter)
 }
