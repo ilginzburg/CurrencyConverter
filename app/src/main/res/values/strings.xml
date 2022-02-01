@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CurrencyConverter</string>
+    <string name="exc_handler_msg">Произошло исключение: </string>
+    <string name="enter_sum_msg">Сумма в рублях: </string>
+</resources>
