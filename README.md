@@ -1,6 +1,6 @@
 
-Android приложение для просмотра курса валют с сайта ЦБ
-https://www.cbr-xml-daily.ru/daily_json.js 
+Android приложение для просмотра курса валют с сайта ЦБ <br />
+https://www.cbr-xml-daily.ru/daily_json.js <br />
 с возможностью конвертации заданной суммы в рублях в выбранную валюту. <br />
  <br />
  <br />
